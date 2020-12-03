@@ -1,0 +1,103 @@
+  os_server:
+    cloud: openstack
+    name: frontend1
+    image: rhel-7.6
+    key_name: ansible_ssh_key
+    flavor: m2.small
+    security_groups: frontend
+    delete_fip: yes
+    wait: no
+    nics:
+      - net-name: int_network
+    meta: "group=testservers, deployment_name=Dev"
+    userdata: |
+      #!/bin/bash
+      curl -o /tmp/openstack.pub http://www.opentlc.com/download/ansible_bootcamp/openstack_keys/openstack.pub
+      cat /tmp/openstack.pub >> /home/cloud-user/.ssh/authorized_keys
+- name: Create app1
+  os_server:
+    cloud: openstack
+    name: app1
+    image: rhel-7.6
+    key_name: ansible_ssh_key
+    flavor: m2.medium
+    security_groups: apps
+    delete_fip: yes
+    wait: no
+    nics:
+      - net-name: int_network
+    meta: "group=testservers, deployment_name=Dev"
+    userdata: |
+      #!/bin/bash
+      curl -o /tmp/openstack.pub http://www.opentlc.com/download/ansible_bootcamp/openstack_keys/openstack.pub
+      cat /tmp/openstack.pub >> /home/cloud-user/.ssh/authorized_keys
+- name: Create app2
+  os_server:
+    cloud: openstack
+    name: app2
+    image: rhel-7.6
+    key_name: ansible_ssh_key
+    flavor: m2.small
+    security_groups: apps
+    delete_fip: yes
+    wait: no
+    nics:
+      - net-name: int_network
+    meta: "group=testservers, deployment_name=Dev"
+    userdata: |
+      #!/bin/bash
+      curl -o /tmp/openstack.pub http://www.opentlc.com/download/ansible_bootcamp/openstack_keys/openstack.pub
+      cat /tmp/openstack.pub >> /home/cloud-user/.ssh/authorized_keys
+- name: Create appdb1
+  os_server:
+    cloud: openstack
+    name: appdb1
+    image: rhel-7.6
+    key_name: ansible_ssh_key
+    flavor: m2.medium
+    security_groups: db
+    delete_fip: yes
+    wait: no
+    nics:
+      - net-name: int_network
+    meta: "group=testservers, deployment_name=Dev"
+    userdata: |
+      #!/bin/bash
+      curl -o /tmp/openstack.pub http://www.opentlc.com/download/ansible_bootcamp/openstack_keys/openstack.pub
+      cat /tmp/openstack.pub >> /home/cloud-user/.ssh/authorized_keys
+- name: Add floating IP to frontend1
+  os_floating_ip:
+    cloud: openstack
+    state: present
+    reuse: yes
+    server: frontend1
+    network: ext_network
+    wait: true
+    timeout: 200
+- name: Add floating IP to app1
+  os_floating_ip:
+    cloud: openstack
+    state: present
+    reuse: yes
+    server: app1
+    network: ext_network
+    wait: true
+    timeout: 200
+- name: Add floating IP to app2
+  os_floating_ip:
+    cloud: openstack
+    state: present
+    reuse: yes
+    server: app2
+    network: ext_network
+    wait: true
+    timeout: 200
+- name: Add floating IP to appdb1
+  os_floating_ip:
+    cloud: openstack
+    state: present
+    reuse: yes
+    server: appdb1
+    network: ext_network
+    wait: true
+    timeout: 200
